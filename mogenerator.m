@@ -13,6 +13,8 @@ NSString  *gCustomBaseClassForced;
 BOOL       gSwift;
 
 static NSString *const kAttributeValueScalarTypeKey = @"attributeValueScalarType";
+static NSString *const kAttributeValueScalarAccessorNameKey = @"attributeValueScalarAccessorName";
+static NSString *const kAttributeValueScalarFactoryMethodNameKey = @"attributeValueScalarFactoryMethodName";
 static NSString *const kAdditionalHeaderFileNameKey = @"additionalHeaderFileName";
 
 @interface NSEntityDescription (fetchedPropertiesAdditions)
@@ -417,6 +419,30 @@ static NSString *const kAdditionalHeaderFileNameKey = @"additionalHeaderFileName
         }
     }
 }
+-(BOOL)hasCustomScalarAttributeType {
+    NSString *attributeValueScalarType = [[self userInfo] objectForKey:kAttributeValueScalarTypeKey];
+    
+    if (attributeValueScalarType) {
+        return YES;
+    }
+    return NO;
+}
+-(NSString*)scalarCustomAccessorMethodName {
+    NSString *attributeValueScalarAccessorName = [[self userInfo] objectForKey:kAttributeValueScalarAccessorNameKey];
+    
+    if (attributeValueScalarAccessorName) {
+        return attributeValueScalarAccessorName;
+    }
+    return @"rawValue";
+}
+-(NSString*)scalarCustomFactoryMethodName {
+    NSString *attributeValueScalarFactoryMethodName = [[self userInfo] objectForKey:kAttributeValueScalarFactoryMethodNameKey];
+    
+    if (attributeValueScalarFactoryMethodName) {
+        return attributeValueScalarFactoryMethodName;
+    }
+    return @"rawValue:";
+}
 - (NSString*)scalarAccessorMethodName {
     
     BOOL isUnsigned = [self isUnsigned];
@@ -460,30 +486,30 @@ static NSString *const kAdditionalHeaderFileNameKey = @"additionalHeaderFileName
     switch ([self attributeType]) {
         case NSInteger16AttributeType:
             if (isUnsigned) {
-                return @"numberWithUnsignedShort:";
+                return gSwift ? @"unsignedShort:" : @"numberWithUnsignedShort:";
             }
-            return @"numberWithShort:";
+            return gSwift ? @"short:" : @"numberWithShort:";
             break;
         case NSInteger32AttributeType:
             if (isUnsigned) {
-                return @"numberWithUnsignedInt:";
+                return gSwift ? @"unsignedInt:" : @"numberWithUnsignedInt:";
             }
-            return @"numberWithInt:";
+            return gSwift ? @"int:" : @"numberWithInt:";
             break;
         case NSInteger64AttributeType:
             if (isUnsigned) {
-                return @"numberWithUnsignedLongLong:";
+                return gSwift ? @"unsignedLongLong:" : @"numberWithUnsignedLongLong:";
             }
-            return @"numberWithLongLong:";
+            return gSwift ? @"longLong:" : @"numberWithLongLong:";
             break;
         case NSDoubleAttributeType:
-            return @"numberWithDouble:";
+            return gSwift ? @"double:" : @"numberWithDouble:";
             break;
         case NSFloatAttributeType:
-            return @"numberWithFloat:";
+            return gSwift ? @"float:" : @"numberWithFloat:";
             break;
         case NSBooleanAttributeType:
-            return @"numberWithBool:";
+            return gSwift ? @"bool:" : @"numberWithBool:";
             break;
         default:
             return nil;
