@@ -499,7 +499,7 @@ static NSString *const kAdditionalHeaderFileNameKey = @"additionalHeaderFileName
             if (isUnsigned) {
                 return @"unsignedLongLongValue";
             }
-            return @"longLongValue";
+            return gSwift ? @"int64Value" : @"longLongValue";
             break;
         case NSDoubleAttributeType:
             return @"doubleValue";
@@ -515,6 +515,10 @@ static NSString *const kAdditionalHeaderFileNameKey = @"additionalHeaderFileName
     }
 }
 - (NSString*)scalarFactoryMethodName {
+
+    if (gSwift) {
+        return @"value:";
+    }
 
     BOOL isUnsigned = [self isUnsigned];
 
